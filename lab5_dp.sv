@@ -6,6 +6,17 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
 // TODO: ... 
 // TODO: input logic 	      clk, // clock signal 
 // TODO: input logic 	      rst           // reset
+      output logic [7:0] plainByte,
+      output logic fInValid,
+
+      input logic incByteCount,
+      input logic getNext,
+      input logic Load_LFSR,
+      input logic lfsr_en,
+      input logic validIn,
+
+      input logic clk,
+      input logic rst
    );
    
 
@@ -15,25 +26,16 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
 
    logic [8-1:0] 	       byteCount;
 
-
-   //
-   // FIFO
-   // This fifo takes data from the outside (testbench) and captures it
-   // Your logic reads from this fifo.
-   //
    logic [7:0] 		       fInEncryptByte;  // data from the input fifo
    fifo fm (.rdDat(fInEncryptByte), .valid(fInValid),
-	    .wrDat(encryptByte), .push(validIn),
-	    .pop(getNext), .clk(clk), .rst(rst));
+	         .wrDat(encryptByte), .push(validIn),
+	         .pop(getNext), .clk(clk), .rst(rst));
    
+   logic preambleDone;
+   assign preambleDone = byteCount >= 7;
 
-   // TODO:
-   // TODO: detect preambleDone
-   // TODO:
-   
-   // TODO:
-   // TODO: detect packet end (i.e. 32 bytes have been processed)
-   // TODO:
+   logic messageDone;
+   assign messageDone = byteCount == 32;
 	
    // TODO: you might want to have 6 different sets of LFSR_state
    // TODO: signals, one belonging to each of six different possible
@@ -65,15 +67,38 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
    // TODO: lfsr5b l3 ( . . . );
    // TODO: lfsr5b l4 ( . . . );
    // TODO: lfsr5b l5 ( . . . );
-				
+
+   // assign LFSR_state[0] = 5'b11110; // 0x1E
+   // assign LFSR_state[1] = 5'b11101; // 0x1D
+   // assign LFSR_state[2] = 5'b11011; // 0x1B
+   // assign LFSR_state[3] = 5'b10111; // 0x17
+   // assign LFSR_state[4] = 5'b10100; // 0x14
+   // assign LFSR_state[5] = 5'b10010; // 0x12
+
+   logic [4:0] LFSR_state[6];
+   lfsr5b l0 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h1E), .start, .state(LFSR_state[0]));
+   lfsr5b l1 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h1D), .start, .state(LFSR_state[1]));
+   lfsr5b l2 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h1B), .start, .state(LFSR_state[2]));
+   lfsr5b l3 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h17), .start, .state(LFSR_state[3]));
+   lfsr5b l4 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h14), .start, .state(LFSR_state[4]));
+   lfsr5b l5 (.clk, .en(lfsr_en),. init(load_LFSR), .taps(5'h12), .start, .state(LFSR_state[5]));
+
+   logic [7:0] correct = 8'h7E;
+   logic [7:0] check0;
+   logic [7:0] check1;
+   logic [7:0] check2;
+   logic [7:0] check3;
+   logic [7:0] check4;
+   logic [7:0] check5;
+
    //
    // sticky bit logic to find matching LFSR
    //
    logic [5:0] match;   // match status for each lfsr
    always @(posedge clk) begin 
       if(rst) begin 
-	 match <= 6'h3F;
-      end else begin  
+	      match <= 6'h3F;
+      end else begin
 	 // TODO: for each of the 6 LFSRS
 	 // TODO: maintain a match bit
 	 // TODO: need to check for matches during the
@@ -89,9 +114,14 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
 	 // TODO: if(.. processing a preamble byte .. ) begin
 	 // TODO:    sticky bit logic for match[0], match[1], ... match[5]
 	 // TODO: end 
-	 end 
-      end 
+         // if (!preambleDone) begin
+         //    check0 
+
+
+         // end
+	   end  
    end 
+
 
 
    
@@ -103,22 +133,20 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
    // TODO: for the LFSRs.  You should be able to figure this out based on
    // TODO: the value of the first encrypted byte and the knowledged that
    // TODO: the unencrypted value is the preamble byte.
-
-
 	
    //
    // byte counter - count the number of bytes processed
    //
    always_ff @(posedge clk) begin 
       if (rst) begin
-	 byteCount <= 'd0;
-	 end else begin
-	    if(incByteCount) begin 
-	       byteCount <= byteCount + 'd1; 
-	    end else begin 
-	       byteCount <= byteCount;
-	    end 
-	 end
+	      byteCount <= 'd0;
+	   end else begin
+	      if(incByteCount) begin 
+	         byteCount <= byteCount + 'd1; 
+	      end else begin 
+	         byteCount <= byteCount;
+	      end 
+	   end
    end 	
 		
    

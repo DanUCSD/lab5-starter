@@ -12,7 +12,13 @@ module lab5 #(parameter DW=8, AW=8, byte_count=2**AW, lfsr_bitwidth=5)(
     output logic       done,
     input logic        rst);
    
-
+  	logic Load_LFSR;
+  	logic incByteCount;
+  	logic lfsr_en;
+  	logic getNext;
+  	logic preambleDone;
+  	logic messageDone;
+    logic fInValid;
 
    // TODO: declare the wires that are *outputs* of the control and datapath that are not
    // TODO: primary outputs module lab5.
