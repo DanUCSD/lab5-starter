@@ -38,7 +38,7 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
    lfsr5b l2 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h1B), .start, .state(LFSR_state[2]));
    lfsr5b l3 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h17), .start, .state(LFSR_state[3]));
    lfsr5b l4 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h14), .start, .state(LFSR_state[4]));
-   lfsr5b l5 (.clk, .en(lfsr_en),. init(load_LFSR), .taps(5'h12), .start, .state(LFSR_state[5]));
+   lfsr5b l5 (.clk, .en(lfsr_en), .init(load_LFSR), .taps(5'h12), .start, .state(LFSR_state[5]));
 
    logic [5:0] match;
    always @(posedge clk) begin 
