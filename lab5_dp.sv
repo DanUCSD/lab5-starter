@@ -46,22 +46,22 @@ module lab5_dp #(parameter DW=8, AW=8, lfsr_bitwidth=5) (
 	      match <= 6'h3F;
       end else begin
           if (!preambleDone) begin
-            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[5]} != 8'h7E) 				begin
+            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[5]} != 8'h7E && match[5]) begin
               match[5] = 0;
             end
-            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[4]} != 8'h7E) 				begin
+            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[4]} != 8'h7E && match[4]) begin
               match[4] = 0;
             end
-            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[3]} != 8'h7E) 				begin
+            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[3]} != 8'h7E && match[3]) begin
               match[3] = 0;
             end
-            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[2]} != 8'h7E) 				begin
+            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[2]} != 8'h7E && match[2]) begin
               match[2] = 0;
             end
-            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[1]} != 8'h7E) 				begin
+            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[1]} != 8'h7E && match[1]) begin
               match[1] = 0;
             end
-            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[0]} != 8'h7E) 				begin
+            if ({1'b0, fInEncryptByte[6:5], fInEncryptByte[4:0] ^ LFSR_state[0]} != 8'h7E && match[0]) begin
               match[0] = 0;
             end
           end
